@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">AndroidVideoPublic</string>
+    <string name="app_name">Amani Demo</string>
+    <string name="name_surname">Name Surname</string>
+    <string name="start_call">Start Video Call</string>
+    <string name="token">null</string>
+    <string name="host">null</string>
+    <string name="name_surname_blank">Please, enter your first and last name.</string>
 </resources>

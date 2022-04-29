@@ -1,4 +1,4 @@
-package ai.amani.android_video_public
+package com.example.amani_sdk
 
 import org.junit.Test
 

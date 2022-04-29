@@ -1,10 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
+
+    <resources>
+    <color name="colorPrimary">#263B5B</color>
+    <color name="colorPrimaryDark">#263B5B</color>
+    <color name="colorAccent">#ffffff</color>
+    <color name="color_white">#ffffff</color>
+    <color name="color_black_op">#50000000</color>
+    <color name="color_yellow_btn">#FFFF9800</color>
+    <color name="color_blue">#265DB1</color>
+    <color name="signature_color">#0005af</color>
+    <color name="disabled_color_white">#80ffffff</color>
+    <color name="color_black">#000000</color>
     <color name="white">#FFFFFFFF</color>
-</resources>
+    <color name="approve_green">#4CC0A1</color>
+    <color name="amani_blue">#8991FF</color>
+    <color name="black">#FF000000</color>
+    <color name="error_red">#A30417</color>
+
+
+    </resources>

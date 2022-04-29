@@ -1,4 +1,4 @@
-package ai.amani.android_video_public
+package com.example.amani_sdk
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("ai.amani.android_video_public", appContext.packageName)
+        assertEquals("com.example.amani_sdk", appContext.packageName)
     }
 }
