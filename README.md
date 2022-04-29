@@ -35,7 +35,7 @@ buildFeatures {
     private lateinit var videoBuilder: VideoSDK.Builder
  ```
   * Step 2: Create a global AmaniVideoCallObserver object like below
-  *
+  
   ```kotlin
      private val videoCallObserver: AmaniVideoCallObserver = object :
         AmaniVideoCallObserver {
