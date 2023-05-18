@@ -86,3 +86,7 @@ lint/tmp/
 .idea/misc.xml
 .idea/compiler.xml
 .idea/.name
+.idea/kotlinc.xml
+.idea/jarRepositories.xml
+gradle/wrapper/gradle-wrapper.jar
+app/src/main/java/com/example/amani_sdk/VideoSDKCredentials.kt
