@@ -3,6 +3,7 @@ package com.example.amani_sdk
 import ai.amani.videosdk.VideoSDK
 import ai.amani.videosdk.observer.AmaniVideoButtonEvents
 import ai.amani.videosdk.observer.AmaniVideoCallObserver
+import ai.amani.videosdk.observer.AmaniVideoRemoteEvents
 import ai.amani.videosdk.observer.ConnectionState
 import android.os.Bundle
 import android.util.Log
@@ -70,6 +71,13 @@ class CallActivity : AppCompatActivity() {
             ).show()
         }
 
+        override fun onRemoteEvent(
+            amaniVideoRemoteEvents: AmaniVideoRemoteEvents,
+            isActivated: Boolean
+        ) {
+
+        }
+
         override fun onUiEvent(
             amaniVideoButtonEvents: AmaniVideoButtonEvents,
             isActivated: Boolean
@@ -114,10 +122,35 @@ class CallActivity : AppCompatActivity() {
             visibleLoader(true)
 
             videoBuilder = VideoSDK.Builder()
-                .context(this)
-                .serverUrl(resources.getString(R.string.host))
-                .nameSurname(nameSurnameTxt.text.toString())
-                .token(resources.getString(R.string.token))
+                .nameSurname(nameSurname = nameSurnameTxt.text.toString())
+                .servers(
+                    mainServerURL = VideoSDKCredentials.mainServerURL,
+                    stunServerURL = VideoSDKCredentials.stunServerURL,
+                    turnServerURL = VideoSDKCredentials.turnServerURL
+                )
+                .authentication(
+                    token = VideoSDKCredentials.token,
+                    userName = VideoSDKCredentials.userName,
+                    password = VideoSDKCredentials.password
+                )
+                .remoteViewAspectRatio(
+                    VideoSDK.RemoteViewAspectRatio.Vertical
+                )
+                .audioOptions(
+                    VideoSDK.AudioOptions.SpeakerPhoneOn
+                )
+                .userInterface(
+                    cameraSwitchButton = R.drawable.ic_camera_switch,
+                    cameraSwitchButtonBackground = R.drawable.oval_gray,
+                    microphoneMuteButton = R.drawable.ic_mic_on,
+                    microphoneMuteButtonEnabled = R.drawable.ic_mic_off,
+                    microphoneMuteButtonBackground = R.drawable.oval_gray,
+                    cameraCloseButton = R.drawable.ic_camera_on,
+                    cameraCloseButtonEnabled = R.drawable.ic_camera_off,
+                    cameraCloseButtonBackground = R.drawable.oval_gray,
+                    callEndButton = R.drawable.call_end,
+                    callEndButtonBackground = R.drawable.oval_red
+                    )
                 .videoCallObserver(videoCallObserver)
                 .build()
 
