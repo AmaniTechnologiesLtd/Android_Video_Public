@@ -1,4 +1,7 @@
-# Amani Video SDK #
+<h1 align="center">Amani Video SDK </h1></br>
+
+![amani-label](https://github.com/AmaniTechnologiesLtd/Android_Video_Public/assets/75306240/47b89bb3-f6bc-4104-8047-bb7f6e5f7b39)
+
 
 This README would normally document whatever steps are necessary to get your application up and running.
 
