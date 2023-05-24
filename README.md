@@ -196,6 +196,8 @@ VideoSDK.toggleTorch(object : ToggleTorchObserver {
    ```java
 -keep class ai.amani** {*;}
 -dontwarn ai.amani**
+-keep class com.cloudwebrtc.webrtc.** { *; }
+-keep class org.webrtc.** { *; }
 
    ```     
 
