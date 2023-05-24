@@ -14,7 +14,6 @@ import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.amani.ai.R
-import com.example.amani_sdk.FragmentExt.replaceFragmentWithBackStack
 import com.google.android.material.snackbar.Snackbar
 
 
@@ -47,7 +46,14 @@ class CallActivity : AppCompatActivity() {
                 }
 
                 ConnectionState.FAILED -> {
-                    Log.i(TAG, "Failed: ")
+                    Snackbar.make(
+                        findViewById(R.id.layout),
+                        "Connection failed",
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+
+                    popBackStack()
+                    visibleLoader(false)
                 }
 
                 ConnectionState.CONNECTED -> {
@@ -56,7 +62,14 @@ class CallActivity : AppCompatActivity() {
                 }
 
                 ConnectionState.DISCONNECTED -> {
-                    Log.i(TAG, "Disconnected: ")
+                    Snackbar.make(
+                        findViewById(R.id.layout),
+                        "Connection disconnected",
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+
+                    popBackStack()
+                    visibleLoader(false)
                 }
             }
         }
