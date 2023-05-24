@@ -4,7 +4,10 @@ import ai.amani.videosdk.VideoSDK
 import ai.amani.videosdk.observer.AmaniVideoButtonEvents
 import ai.amani.videosdk.observer.AmaniVideoCallObserver
 import ai.amani.videosdk.observer.AmaniVideoRemoteEvents
+import ai.amani.videosdk.observer.CameraPosition
 import ai.amani.videosdk.observer.ConnectionState
+import ai.amani.videosdk.observer.SwitchCameraObserver
+import ai.amani.videosdk.observer.ToggleTorchObserver
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -46,12 +49,7 @@ class CallActivity : AppCompatActivity() {
                 }
 
                 ConnectionState.FAILED -> {
-                    Snackbar.make(
-                        findViewById(R.id.layout),
-                        "Connection failed",
-                        Snackbar.LENGTH_SHORT
-                    ).show()
-
+                    snackBar("Connection failed")
                     popBackStack()
                     visibleLoader(false)
                 }
@@ -62,12 +60,7 @@ class CallActivity : AppCompatActivity() {
                 }
 
                 ConnectionState.DISCONNECTED -> {
-                    Snackbar.make(
-                        findViewById(R.id.layout),
-                        "Connection disconnected",
-                        Snackbar.LENGTH_SHORT
-                    ).show()
-
+                    snackBar("Connection disconnected")
                     popBackStack()
                     visibleLoader(false)
                 }
@@ -88,7 +81,59 @@ class CallActivity : AppCompatActivity() {
             amaniVideoRemoteEvents: AmaniVideoRemoteEvents,
             isActivated: Boolean
         ) {
+            when (amaniVideoRemoteEvents) {
+                AmaniVideoRemoteEvents.CALL_END -> {
+                    snackBar("Call is ended")
+                    popBackStack()
+                }
 
+                AmaniVideoRemoteEvents.CAMERA_SWITCH -> {
+
+                    alertDialog(
+                        title = "Camera Switch Request",
+                        message = "Camera switch is requested by agent. Could you give permission to switch it?",
+                        positiveButton = "Sure",
+                        negativeButton = "Not now",
+                        positiveClick = {
+                            VideoSDK.switchCamera(object : SwitchCameraObserver {
+                                override fun onSuccess(cameraPosition: CameraPosition) {
+
+                                }
+
+                                override fun onException(exception: Throwable) {
+
+                                }
+
+                            })
+                        },
+                        negativeClick = {
+                            snackBar("Camera switch request is denied")
+                        }
+                    )
+                }
+
+                AmaniVideoRemoteEvents.TORCH -> {
+                    alertDialog(
+                        title = "Flash Request",
+                        message = "Flash is requested by agent. Could you give permission to enable it?",
+                        positiveButton = "Sure",
+                        negativeButton = "Not now",
+                        positiveClick = {
+                            VideoSDK.toggleTorch(object : ToggleTorchObserver {
+                                override fun onSuccess(isEnabled: Boolean) {
+
+                                }
+
+                                override fun onError(error: Throwable) {
+                                }
+                            })
+                        },
+                        negativeClick = {
+                            snackBar("Flash request is denied")
+                        }
+                    )
+                }
+            }
         }
 
         override fun onUiEvent(
