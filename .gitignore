@@ -90,3 +90,7 @@ lint/tmp/
 .idea/jarRepositories.xml
 gradle/wrapper/gradle-wrapper.jar
 app/src/main/java/com/example/amani_sdk/VideoSDKCredentials.kt
+app/.DS_Store
+.idea/.DS_Store
+.DS_Store
+app/.DS_Store

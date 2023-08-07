@@ -14,7 +14,7 @@ This README would normally document whatever steps are necessary to get your app
 
    1. Add the following dependencies to your Module build.gradle file.
 ```groovy
-    implementation 'ai.amani.android:amanivideosdk:1.1.2'
+    implementation 'ai.amani.android:amanivideosdk:1.1.3'
 ```
 
    2. Enable view-binding in the Module build.gradle by adding this line into code block of android {}:
