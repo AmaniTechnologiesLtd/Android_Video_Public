@@ -6,9 +6,17 @@
 This README would normally document whatever steps are necessary to get your application up and running.
 
 # Table of Content
+- [General Requirements](#general-requirements)
 - [Initial Configuration](#initial-configuration)
 - [SDK Usage](#sdk-usage)
 - [ProGuard Rule Usage](#proguard-rule-usage)
+
+## General Requirements
+
+The minimum requirements for the SDK are:
+
+* API Level 21
+* compileSdkVersion 33
 
 ## Initial Configuration ##
 
