@@ -3,7 +3,6 @@
 ![amani-label](https://github.com/AmaniTechnologiesLtd/Android_Video_Public/assets/75306240/47b89bb3-f6bc-4104-8047-bb7f6e5f7b39)
 
 
-This README would normally document whatever steps are necessary to get your application up and running.
 
 # Table of Content
 - [General Requirements](#general-requirements)
@@ -15,14 +14,31 @@ This README would normally document whatever steps are necessary to get your app
 
 The minimum requirements for the SDK are:
 
-* API Level 21
-* compileSdkVersion 33
+* minSdkVersion 21
+* compileSdk 34
+
+Compiled with Java 17, minimum Java Version should be 17 as follows.
+
+```groovy
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget=17
+    }
+
+    kotlin {
+        jvmToolchain(17)
+    }  
+```
 
 ## Initial Configuration ##
 
    1. Add the following dependencies to your Module build.gradle file.
 ```groovy
-    implementation 'ai.amani.android:amanivideosdk:1.2.0'
+    implementation 'ai.amani.android:amanivideosdk:1.4.1'
 ```
 
    2. Enable view-binding in the Module build.gradle by adding this line into code block of android {}:
@@ -117,6 +133,12 @@ private val videoCallObserver: AmaniVideoCallObserver = object : AmaniVideoCallO
                 //you can ask user to enable flash or you can directly enable flash thanks to
                 //switch function @see VideoSDK.toggleTorch()
             }
+
+             AmaniVideoRemoteEvents.CALL_ESCALATED -> {
+                //The event triggered when the studio requests the call
+                //to be transferred/forwarded to another agent. In this case, the call can be 
+                //set to escalated true again and started as in the example. 
+            }
         }
     }
 }
@@ -132,6 +154,7 @@ videoBuilder = VideoSDK.Builder()
         stunServerURL = VideoSDKCredentials.stunServerURL, //Mandatory field
         turnServerURL = VideoSDKCredentials.turnServerURL  //Mandatory field
     )
+    .escalatedCall(escalated = true/false) //To escalate the current call
     .authentication(
         token = VideoSDKCredentials.token, //Mandatory field
         userName = VideoSDKCredentials.userName, //Mandatory field

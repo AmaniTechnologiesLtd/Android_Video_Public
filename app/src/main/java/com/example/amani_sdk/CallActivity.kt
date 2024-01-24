@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.amani.ai.R
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineScope
 
 
 class CallActivity : AppCompatActivity() {
@@ -26,12 +27,21 @@ class CallActivity : AppCompatActivity() {
         private const val TAG = "CallActivity"
     }
 
+    /** Call starter button to start a call */
     private val callStart: Button by lazy { findViewById(R.id.call_start) }
+
+    /** Name surname edit text input to pass it SDK */
     private val nameSurnameTxt: EditText by lazy { findViewById(R.id.name_surname_txt) }
+
+    /** Progressbar to show until call is answered */
     private val progressLoader: ProgressBar by lazy { findViewById(R.id.progress_loader) }
 
     /** Video Call configuration object*/
     private lateinit var videoBuilder: VideoSDK.Builder
+
+    /** Video Call fragment instance*/
+    private var videoCallFragment: Fragment? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +50,66 @@ class CallActivity : AppCompatActivity() {
         clickEvent()
     }
 
+    /**
+     *  # Amani Video Call Observer
+     *
+     * ## [AmaniVideoCallObserver.onConnectionState]: The current states of the current call.
+     *
+     * [ConnectionState.CONNECTING]
+     * * The current call state is on connecting, set loader or etc.
+     *
+     * [ConnectionState.FAILED]
+     * * The current connection is failed somehow, remove call fragment
+     * && hide loader/show error message
+     *
+     * [ConnectionState.CONNECTED]
+     * * The current connection is succeed
+     *
+     *  [ConnectionState.DISCONNECTED]
+     * * The current connection is disconnected, This event can be
+     * triggered more than once, depending on internet network factors, it can be triggered from
+     * time to time and the connection can be successfully established again. Unless it falls into
+     * the failed state, the fragment should not be removed and the connection should be waited
+     * for completion.
+     *
+     * ## [AmaniVideoCallObserver.onRemoteEvent]: Remote events/actions done by studio/web.
+     *
+     * [AmaniVideoRemoteEvents.TORCH]
+     * * The event of turning on the camera's flash is requested by
+     * the agent via web/studio. When this action is triggered, the function required to
+     * activate the flash can be used by the SDK.
+     *
+     * [AmaniVideoRemoteEvents.CALL_END]
+     * * Triggered if the call is terminated by the
+     * studio. When this situation is triggered, the call fragment must be removed from the stack,
+     * as in the example.
+     *
+     * [AmaniVideoRemoteEvents.CAMERA_SWITCH]
+     * * The event triggered by web/studio to switch the camera.
+     * In this case, it may be necessary to use the camera switch function required by the SDK.
+     *
+     * [AmaniVideoRemoteEvents.CALL_ESCALATED]
+     * * The event triggered when the studio requests the call
+     * to be transferred/forwarded to another agent. In this case, the call can be set to escalated
+     * true again and started as in the example.
+     *
+     * ## [AmaniVideoCallObserver.onUiEvent]: Current SDK user actions within ui/fragment.
+     *
+     * [AmaniVideoButtonEvents.CALL_END]
+     * * The event of the user to voluntarily close the call by
+     * pressing the button.
+     *
+     * [AmaniVideoButtonEvents.CAMERA_SWITCH]
+     * * The event of the user's own request to rotate the camera
+     *
+     * [AmaniVideoButtonEvents.MUTE]
+     * * The user voluntarily turns off his microphone
+     *
+     * [AmaniVideoButtonEvents.CAMERA_CLOSE]
+     * * The event when the user turns off their camera
+     *
+     * ## [AmaniVideoCallObserver.onException]: Exception messages from SDK.
+     */
     private val videoCallObserver: AmaniVideoCallObserver = object :
         AmaniVideoCallObserver {
         override fun onConnectionState(connectionState: ConnectionState) {
@@ -61,7 +131,6 @@ class CallActivity : AppCompatActivity() {
 
                 ConnectionState.DISCONNECTED -> {
                     snackBar("Connection disconnected")
-                    popBackStack()
                     visibleLoader(false)
                 }
             }
@@ -133,6 +202,15 @@ class CallActivity : AppCompatActivity() {
                         }
                     )
                 }
+
+                AmaniVideoRemoteEvents.CALL_ESCALATED -> {
+
+                    removeFragment(videoCallFragment)
+
+                    setVideoSDK(escalated = true)
+
+                    navigateVideoSDKFragment()
+                }
             }
         }
 
@@ -167,6 +245,51 @@ class CallActivity : AppCompatActivity() {
         }
     }
 
+    /** Sets the Video SDK configuration, creates the Video Call Fragment instance
+     *
+     * @param escalated : To escalate the current call to another agent
+     */
+    private fun setVideoSDK(escalated: Boolean = false) {
+        videoBuilder = VideoSDK.Builder()
+            .nameSurname(nameSurname = nameSurnameTxt.text.toString())
+            .escalatedCall(escalated = escalated)
+            .servers(
+                mainServerURL = VideoSDKCredentials.mainServerURL,
+                stunServerURL = VideoSDKCredentials.stunServerURL,
+                turnServerURL = VideoSDKCredentials.turnServerURL
+            )
+            .authentication(
+                token = VideoSDKCredentials.token,
+                userName = VideoSDKCredentials.userName,
+                password = VideoSDKCredentials.password
+            )
+            .remoteViewAspectRatio(
+                VideoSDK.RemoteViewAspectRatio.Vertical
+            )
+            .audioOptions(
+                VideoSDK.AudioOptions.SpeakerPhoneOn
+            )
+            .userInterface(
+                cameraSwitchButton = R.drawable.ic_camera_switch,
+                cameraSwitchButtonBackground = R.drawable.oval_gray,
+                microphoneMuteButton = R.drawable.ic_mic_on,
+                microphoneMuteButtonEnabled = R.drawable.ic_mic_off,
+                microphoneMuteButtonBackground = R.drawable.oval_gray,
+                cameraCloseButton = R.drawable.ic_camera_on,
+                cameraCloseButtonEnabled = R.drawable.ic_camera_off,
+                cameraCloseButtonBackground = R.drawable.oval_gray,
+                callEndButton = R.drawable.call_end,
+                callEndButtonBackground = R.drawable.oval_red
+            )
+            .videoCallObserver(videoCallObserver)
+            .build()
+
+        videoCallFragment = VideoSDK.startVideoCall(videoBuilder)
+    }
+
+    /**
+     * Listen click events
+     */
     private fun clickEvent() {
         callStart.setOnClickListener {
             if (nameSurnameTxt.text.isBlank()) {
@@ -177,48 +300,24 @@ class CallActivity : AppCompatActivity() {
                 ).show()
                 return@setOnClickListener
             }
-            visibleLoader(true)
-
-            videoBuilder = VideoSDK.Builder()
-                .nameSurname(nameSurname = nameSurnameTxt.text.toString())
-                .servers(
-                    mainServerURL = VideoSDKCredentials.mainServerURL,
-                    stunServerURL = VideoSDKCredentials.stunServerURL,
-                    turnServerURL = VideoSDKCredentials.turnServerURL
-                )
-                .authentication(
-                    token = VideoSDKCredentials.token,
-                    userName = VideoSDKCredentials.userName,
-                    password = VideoSDKCredentials.password
-                )
-                .remoteViewAspectRatio(
-                    VideoSDK.RemoteViewAspectRatio.Vertical
-                )
-                .audioOptions(
-                    VideoSDK.AudioOptions.SpeakerPhoneOn
-                )
-                .userInterface(
-                    cameraSwitchButton = R.drawable.ic_camera_switch,
-                    cameraSwitchButtonBackground = R.drawable.oval_gray,
-                    microphoneMuteButton = R.drawable.ic_mic_on,
-                    microphoneMuteButtonEnabled = R.drawable.ic_mic_off,
-                    microphoneMuteButtonBackground = R.drawable.oval_gray,
-                    cameraCloseButton = R.drawable.ic_camera_on,
-                    cameraCloseButtonEnabled = R.drawable.ic_camera_off,
-                    cameraCloseButtonBackground = R.drawable.oval_gray,
-                    callEndButton = R.drawable.call_end,
-                    callEndButtonBackground = R.drawable.oval_red
-                    )
-                .videoCallObserver(videoCallObserver)
-                .build()
-
-            val callFragment: Fragment? = VideoSDK.startVideoCall(videoBuilder)
-            callFragment?.let {
-                replaceFragmentWithBackStack(R.id.container, callFragment)
-            }
+            setVideoSDK()
+            navigateVideoSDKFragment()
         }
     }
 
+    /**
+     * Navigating Video Call Fragment
+     */
+    private fun navigateVideoSDKFragment() {
+        visibleLoader(true)
+        videoCallFragment?.let {
+            replaceFragmentWithBackStack(R.id.container, it)
+        }
+    }
+
+    /**
+     * Show/hide progressbar
+     */
     private fun visibleLoader(b: Boolean) {
         runOnUiThread {
             progressLoader.apply {

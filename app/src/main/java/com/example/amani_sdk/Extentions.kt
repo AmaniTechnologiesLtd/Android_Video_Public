@@ -19,6 +19,11 @@ fun AppCompatActivity.popBackStack() {
     this.supportFragmentManager.popBackStack()
 }
 
+fun AppCompatActivity.removeFragment(fragment: Fragment?) {
+    if (fragment == null) return
+    this.supportFragmentManager.beginTransaction().remove(fragment).commit()
+}
+
 fun AppCompatActivity.alertDialog(
     title: String,
     message: String,

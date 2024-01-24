@@ -94,3 +94,4 @@ app/.DS_Store
 .idea/.DS_Store
 .DS_Store
 app/.DS_Store
+.idea/migrations.xml
