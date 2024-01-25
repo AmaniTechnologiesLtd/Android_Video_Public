@@ -224,7 +224,7 @@ VideoSDK.toggleTorch(object : ToggleTorchObserver {
 
    * If you are using ProGuard in your application, you just need to add this line into your ProGuard Rules!
 
-   ```java
+   ```pro
 -keep class ai.amani** {*;}
 -dontwarn ai.amani**
 -keep class com.cloudwebrtc.webrtc.** { *; }
