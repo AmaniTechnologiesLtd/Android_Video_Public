@@ -14,8 +14,10 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.amani.ai.BuildConfig
 import com.amani.ai.R
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
@@ -36,16 +38,20 @@ class CallActivity : AppCompatActivity() {
     /** Progressbar to show until call is answered */
     private val progressLoader: ProgressBar by lazy { findViewById(R.id.progress_loader) }
 
+    /** TextView to show current app version*/
+    private val appVersion: TextView by lazy { findViewById(R.id.app_version) }
+
     /** Video Call configuration object*/
     private lateinit var videoBuilder: VideoSDK.Builder
 
     /** Video Call fragment instance*/
     private var videoCallFragment: Fragment? = null
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        appVersion.text = BuildConfig.VERSION_NAME
 
         clickEvent()
     }
@@ -325,10 +331,5 @@ class CallActivity : AppCompatActivity() {
                 else this.visibility = View.INVISIBLE
             }
         }
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        visibleLoader(false)
     }
 }
