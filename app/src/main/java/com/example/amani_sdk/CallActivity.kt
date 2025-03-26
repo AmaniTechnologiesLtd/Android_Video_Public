@@ -126,7 +126,7 @@ class CallActivity : AppCompatActivity() {
 
                 ConnectionState.FAILED -> {
                     snackBar("Connection failed")
-                    popBackStack()
+                    removeFragment(videoCallFragment)
                     visibleLoader(false)
                 }
 
@@ -145,6 +145,7 @@ class CallActivity : AppCompatActivity() {
         override fun onException(exception: String) {
             Log.e("TAG", "onException: $exception")
             visibleLoader(false)
+            removeFragment(videoCallFragment)
             Snackbar.make(
                 findViewById(R.id.layout),
                 exception,
@@ -159,7 +160,7 @@ class CallActivity : AppCompatActivity() {
             when (amaniVideoRemoteEvents) {
                 AmaniVideoRemoteEvents.CALL_END -> {
                     snackBar("Call is ended")
-                    popBackStack()
+                    removeFragment(videoCallFragment)
                 }
 
                 AmaniVideoRemoteEvents.CAMERA_SWITCH -> {
@@ -227,6 +228,7 @@ class CallActivity : AppCompatActivity() {
             when (amaniVideoButtonEvents) {
                 AmaniVideoButtonEvents.CALL_END -> {
                     if (isActivated) {
+                        removeFragment(videoCallFragment)
                         Log.i(TAG, "Call is end-up")
                     }
                 }
