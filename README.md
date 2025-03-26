@@ -2,6 +2,7 @@
 
 ![amani-label](https://github.com/AmaniTechnologiesLtd/Android_Video_Public/assets/75306240/47b89bb3-f6bc-4104-8047-bb7f6e5f7b39)
 
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/AmaniTechnologiesLtd/Android_Video_Public)
 
 
 # Table of Content
@@ -31,14 +32,15 @@ Compiled with Java 17, minimum Java Version should be 17 as follows.
 
     kotlin {
         jvmToolchain(17)
-    }  
+    }
 ```
 
 ## Initial Configuration ##
 
-   1. Add the following dependencies to your Module build.gradle file.
+   1. Add the following dependencies to your Module build.gradle file. Latest version -> ![GitHub release (latest by date)](https://img.shields.io/github/v/release/AmaniTechnologiesLtd/Android_Video_Public)
+
 ```groovy
-    implementation 'ai.amani.android:amanivideosdk:1.4.1'
+    implementation 'ai.amani.android:amanivideosdk:latest_version'
 ```
 
    2. Enable view-binding in the Module build.gradle by adding this line into code block of android {}:
@@ -56,13 +58,16 @@ buildFeatures {
 
 ## SDK Usage ##
 
-  * Step 1: Create a global value of type VideoSDK.Builder.
+  * Step 1: Create a global value of type VideoSDK.Builder and Video Call Fragment instance
  ```kotlin
      /** Video Call configuration object*/
     private lateinit var videoBuilder: VideoSDK.Builder
+
+    /** Video Call Fragment instance*/
+    private var videoCallFragment: Fragment? = null
  ```
   * Step 2: Create a global AmaniVideoCallObserver object like below
-  
+
   ```kotlin
 private val videoCallObserver: AmaniVideoCallObserver = object : AmaniVideoCallObserver{
     override fun onConnectionState(connectionState: ConnectionState) {
@@ -73,6 +78,9 @@ private val videoCallObserver: AmaniVideoCallObserver = object : AmaniVideoCallO
 
             ConnectionState.FAILED -> {
                 //Connection is failed
+
+                //Remove fragment with supported fragment manager from stack
+                removeFragment(videoCallFragment)
             }
 
             ConnectionState.CONNECTED -> {
@@ -88,6 +96,9 @@ private val videoCallObserver: AmaniVideoCallObserver = object : AmaniVideoCallO
 
     override fun onException(exception: String) {
         //Any exception during the call
+
+        //Remove fragment with supported fragment manager from stack
+        removeFragment(videoCallFragment)
     }
 
     override fun onUiEvent(
@@ -97,6 +108,9 @@ private val videoCallObserver: AmaniVideoCallObserver = object : AmaniVideoCallO
         when (amaniVideoButtonEvents) {
             AmaniVideoButtonEvents.CALL_END -> {
                 //The call end button is clicked by mobile SDK user and call ended
+
+                //Remove fragment with supported fragment manager from stack
+                removeFragment(videoCallFragment)
             }
 
             AmaniVideoButtonEvents.CAMERA_SWITCH -> {
@@ -119,7 +133,10 @@ private val videoCallObserver: AmaniVideoCallObserver = object : AmaniVideoCallO
     ) {
         when (amaniVideoRemoteEvents) {
             AmaniVideoRemoteEvents.CALL_END -> {
-                //The call end button is clicked by studio agent side and call is ended
+                 //Remove fragment with supported fragment manager from stack
+                if (isActivated) {
+                        removeFragment(videoCallFragment)
+                    }
             }
 
             AmaniVideoRemoteEvents.CAMERA_SWITCH -> {
@@ -136,8 +153,11 @@ private val videoCallObserver: AmaniVideoCallObserver = object : AmaniVideoCallO
 
              AmaniVideoRemoteEvents.CALL_ESCALATED -> {
                 //The event triggered when the studio requests the call
-                //to be transferred/forwarded to another agent. In this case, the call can be 
-                //set to escalated true again and started as in the example. 
+                //to be transferred/forwarded to another agent. In this case, the call can be
+                //set to escalated true again and started as in the example.
+
+                //Remove fragment with supported fragment manager from stack
+                removeFragment(videoCallFragment)
             }
         }
     }
@@ -167,7 +187,7 @@ videoBuilder = VideoSDK.Builder()
         VideoSDK.AudioOptions.SpeakerPhoneOn //Default is SpeakerPhoneOn, non mandatory field
     )
     .userInterface( //Has default user interface, non mandatory function
-        cameraSwitchButton = R.drawable.ic_camera_switch, 
+        cameraSwitchButton = R.drawable.ic_camera_switch,
         cameraSwitchButtonBackground = R.drawable.oval_gray,
         microphoneMuteButton = R.drawable.ic_mic_on,
         microphoneMuteButtonEnabled = R.drawable.ic_mic_off,
@@ -180,15 +200,15 @@ videoBuilder = VideoSDK.Builder()
     )
     .videoCallObserver(videoCallObserver) //Mandatory field
     .build() //Mandatory function
- 
+
  ```
 
   * Step 4: In this step, we will use startCallVideoCall method to get a Fragment (it could be null check it out while using it). You can commit or navigate this fragment. For this, use the object as typed VideoSDK.Builder that we created step 3 to get Fragment.
 
  ```kotlin
-      val callFragment: Fragment? = VideoSDK.startVideoCall(videoBuilder)
+      videoCallFragment = VideoSDK.startVideoCall(videoBuilder)
             callFragment?.let {
-                replaceFragment(R.id.container, callFragment)
+                replaceFragment(R.id.container, it)
             }
  ```
    * Step 5: In this step, we will cover the use of functions such as camera rotation and flash activation in the SDK. The main purpose of use of these functions is to use with a remote request by the Agent. The reason why these functions are given separately is to allow you to get permission from the user before a Flash or Camera translation request from the Agent. You can respect user permissions by using these functions if the user allows.
@@ -219,6 +239,26 @@ VideoSDK.toggleTorch(object : ToggleTorchObserver {
     }
 })
  ```
+
+### Helper Functions (Additional)
+
+Extension functions used in the usage example to navigate to and remove the Video Call Fragment.
+
+ ``` kotlin
+fun AppCompatActivity?.replaceFragment(fragmentContainer: Int, fragment: Fragment) {
+    this ?: return
+    this.supportFragmentManager
+        .beginTransaction()
+        .addToBackStack(fragment.javaClass.name)
+        .replace(fragmentContainer, fragment, fragment.javaClass.name)
+        .commit()
+}
+
+fun AppCompatActivity.removeFragment(fragment: Fragment?) {
+    if (fragment == null) return
+    this.supportFragmentManager.beginTransaction().remove(fragment).commit()
+}
+   ```
 
 ## ProGuard Rule Usage ##
 
