@@ -13,7 +13,7 @@
 
 ## General Requirements
 
-The minimum requirements for the SDK are:
+### The minimum requirements for the SDK
 
 * minSdkVersion 21
 * compileSdk 34
@@ -33,6 +33,30 @@ Compiled with Java 17, minimum Java Version should be 17 as follows.
     kotlin {
         jvmToolchain(17)
     }
+```
+
+### Orientation Requirement 
+
+The Amani Video Call SDK **only supports portrait orientation** 🔒
+
+> ⚠️ **Warning**    
+> You **must enforce portrait mode** before launching the SDK fragment.  
+> Not doing so may result in malfunction or a broken user experience.
+
+
+
+📱 Enforce portrait orientation in Android, before initializing the SDK to make sure the hosting activity is locked to portrait mode:
+
+```kotlin
+// Lock activity to portrait before launching the SDK
+requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+```
+
+After the Video Call is completed, you can change the screen orientation restriction as you wish.
+
+```kotlin
+// Restore original orientation behavior
+requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
 ```
 
 ## Initial Configuration ##
