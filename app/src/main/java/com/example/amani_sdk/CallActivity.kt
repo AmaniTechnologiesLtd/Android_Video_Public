@@ -131,7 +131,7 @@ class CallActivity : AppCompatActivity() {
                 }
 
                 ConnectionState.CONNECTED -> {
-                    Log.i(TAG, "Connected: ")
+                    Log.i(TAG, "Connected")
                     visibleLoader(false)
                 }
 
@@ -143,7 +143,7 @@ class CallActivity : AppCompatActivity() {
         }
 
         override fun onException(exception: String) {
-            Log.e("TAG", "onException: $exception")
+            Log.e(TAG, "Video Call Exception: $exception")
             visibleLoader(false)
             removeFragment(videoCallFragment)
             Snackbar.make(
@@ -228,8 +228,20 @@ class CallActivity : AppCompatActivity() {
             when (amaniVideoButtonEvents) {
                 AmaniVideoButtonEvents.CALL_END -> {
                     if (isActivated) {
-                        removeFragment(videoCallFragment)
-                        Log.i(TAG, "Call is end-up")
+                        alertDialog(
+                            title = "Are you sure?",
+                            message = "Are you sure you want to end the call? If this was " +
+                                    "accidental, press No to continue the call. Press OK to end it.",
+                            positiveButton = "OK",
+                            negativeButton = "NO",
+                            positiveClick = {
+                                snackBar("Call is ended")
+                                removeFragment(videoCallFragment)
+                            },
+                            negativeClick = {
+
+                            }
+                        )
                     }
                 }
                 AmaniVideoButtonEvents.CAMERA_SWITCH -> {
