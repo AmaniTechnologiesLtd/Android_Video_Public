@@ -118,7 +118,7 @@ private val videoCallObserver: AmaniVideoCallObserver = object : AmaniVideoCallO
         }
     }
 
-    override fun onException(exception: String) {
+    override fun onError(error: String) {
         //Any exception during the call
 
         //Remove fragment with supported fragment manager from stack
