@@ -11,8 +11,10 @@ import ai.amani.videosdk.observer.ToggleTorchObserver
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -21,6 +23,7 @@ import com.amani.ai.BuildConfig
 import com.amani.ai.R
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
+import java.util.concurrent.locks.ReentrantLock
 
 
 class CallActivity : AppCompatActivity() {
@@ -142,13 +145,13 @@ class CallActivity : AppCompatActivity() {
             }
         }
 
-        override fun onException(exception: String) {
-            Log.e(TAG, "Video Call Exception: $exception")
+        override fun onError(error: String) {
+            Log.e(TAG, "Video Call Exception: $error")
             visibleLoader(false)
             removeFragment(videoCallFragment)
             Snackbar.make(
                 findViewById(R.id.layout),
-                exception,
+                error,
                 Snackbar.LENGTH_SHORT
             ).show()
         }
@@ -332,6 +335,9 @@ class CallActivity : AppCompatActivity() {
         visibleLoader(true)
         videoCallFragment?.let {
             replaceFragmentWithBackStack(R.id.container, it)
+        }?:run {
+            visibleLoader(false)
+            snackBar("Builder could not be completed")
         }
     }
 
